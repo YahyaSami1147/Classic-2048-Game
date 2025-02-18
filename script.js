@@ -99,9 +99,8 @@ document.addEventListener('touchend', function(event) {
 
     var deltaX = touchEndX - touchStartX;
     var deltaY = touchEndY - touchStartY;
-    let threshold = 100;
 
-    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > threshold  ) {
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
         // Horizontal swipe
         if (deltaX > 0) {
             // Swipe right
