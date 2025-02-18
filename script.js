@@ -1,408 +1,356 @@
 window.onload = function() {
-    buildGridOverlay();                      //Generates grid-overlay
+    buildGridOverlay();                      // Generates grid-overlay
     cellCreator(2, 0);
     directions();
     score(0);
-  };
-  
-  
-  /* GENERATE GRID */
-  function buildGridOverlay() {
-    var game    = document.getElementsByClassName('game');  
-    var grid    = document.getElementsByClassName('grid');
-    var size    = 4;
-    var table   = document.createElement('DIV');
-  
+};
+
+// GENERATE GRID
+function buildGridOverlay() {
+    var game = document.getElementsByClassName('game');  
+    var grid = document.getElementsByClassName('grid');
+    var size = 4;
+    var table = document.createElement('DIV');
+
     table.className += 'grid';
     table.id = ' ';
     table.dataset.value = 0;
-    
+
     for (var i = 0; i < size; i++) {
-      var tr = document.createElement('DIV');
-      table.appendChild(tr);
-      tr.id = 'row_' + (i+1);
-      tr.className += 'grid_row';
-      
-      for (var j = 0; j < size; j++) {
-        var td = document.createElement('DIV');
-        td.id = '' +(i+1) +(j+1);                            //ID with x y
-        td.className += 'grid_cell';
-        tr.appendChild(td);
-      }
-    document.body.appendChild(table);
+        var tr = document.createElement('DIV');
+        table.appendChild(tr);
+        tr.id = 'row_' + (i + 1);
+        tr.className += 'grid_row';
+
+        for (var j = 0; j < size; j++) {
+            var td = document.createElement('DIV');
+            td.id = '' + (i + 1) + (j + 1); // ID with x y
+            td.className += 'grid_cell';
+            tr.appendChild(td);
+        }
+        document.body.appendChild(table);
     }
-    
+
     return table;
-  }
-  
-  
-  
-  /* RANDOM TILE CREATOR */
-  function cellCreator(c, timeOut) {
-    /* do 2 times for 2 new tiles */
+}
+
+// RANDOM TILE CREATOR
+function cellCreator(c, timeOut) {
     for (var i = 0; i < c; i++) {
-      
-      var count = 0;
-      /* search for an empty cell to create a tile */
-      
-      for (var value = 1; value < 2; value++) {
-        var randomX = Math.floor((Math.random()*4)+1);
-        var randomY = Math.floor((Math.random()*4)+1);
-        var checker = document.getElementById('' +randomX +randomY);
-        if (checker.innerHTML != '') {
-          value = 0;
-        } 
-      }
-      
-      var randomValue = Math.floor((Math.random()*4) +1); //create value 1, 2, 3 or 4
-      if (randomValue == 3) {randomValue=4};              //3 --> 4
-      if (randomValue == 1) {randomValue=2};              //1 --> 2
-      var position = document.getElementById(''+randomX +randomY);
-      var tile = document.createElement('DIV');           //create div at x, y
-      position.appendChild(tile);                         //tile becomes child of grid cell
-      tile.innerHTML = ''+randomValue;                    //tile gets value 2 or 4
-      
-      colorSet(randomValue, tile);
-      tile.data = ''+randomValue;
-      tile.id = 'tile_'+randomX +randomY;
-      position.className += ' active';
-      var tileValue = tile.dataset.value;
-      tile.dataset.value = ''+randomValue;
-      
-      console.info(''+timeOut);
-      if (timeOut == 0) {
-        tile.className = 'tile '+randomValue;
-      } else { setTimeout(function() {
-          tile.className = 'tile '+randomValue;
-        }, 10); }
-      
+        var count = 0;
+        for (var value = 1; value < 2; value++) {
+            var randomX = Math.floor((Math.random() * 4) + 1);
+            var randomY = Math.floor((Math.random() * 4) + 1);
+            var checker = document.getElementById('' + randomX + randomY);
+            if (checker.innerHTML != '') {
+                value = 0;
+            } 
+        }
+
+        var randomValue = Math.floor((Math.random() * 4) + 1);
+        if (randomValue == 3) { randomValue = 4; }
+        if (randomValue == 1) { randomValue = 2; }
+        var position = document.getElementById('' + randomX + randomY);
+        var tile = document.createElement('DIV');
+        position.appendChild(tile);
+        tile.innerHTML = '' + randomValue;
+
+        colorSet(randomValue, tile);
+        tile.data = '' + randomValue;
+        tile.id = 'tile_' + randomX + randomY;
+        position.className += ' active';
+        var tileValue = tile.dataset.value;
+        tile.dataset.value = '' + randomValue;
+
+        console.info('' + timeOut);
+        if (timeOut == 0) {
+            tile.className = 'tile ' + randomValue;
+        } else {
+            setTimeout(function() {
+                tile.className = 'tile ' + randomValue;
+            }, 10);
+        }
     }
-    
-    
-  
-  }
-  
-  /* MOVE TILES */
-  document.onkeydown = directions;
-  
-  function directions(e) {
+}
+
+// MOVE TILES
+document.onkeydown = directions;
+
+// Add touch event listeners for mobile
+var touchStartX = 0;
+var touchStartY = 0;
+
+document.addEventListener('touchstart', function(event) {
+    touchStartX = event.touches[0].clientX;
+    touchStartY = event.touches[0].clientY;
+});
+
+document.addEventListener('touchend', function(event) {
+    var touchEndX = event.changedTouches[0].clientX;
+    var touchEndY = event.changedTouches[0].clientY;
+
+    var deltaX = touchEndX - touchStartX;
+    var deltaY = touchEndY - touchStartY;
+
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        // Horizontal swipe
+        if (deltaX > 0) {
+            // Swipe right
+            directions({ keyCode: 39 });
+        } else {
+            // Swipe left
+            directions({ keyCode: 37 });
+        }
+    } else {
+        // Vertical swipe
+        if (deltaY > 0) {
+            // Swipe down
+            directions({ keyCode: 40 });
+        } else {
+            // Swipe up
+            directions({ keyCode: 38 });
+        }
+    }
+});
+
+// Existing directions function
+function directions(e) {
     e = e || window.event;
     var d = 0;
-  // ----- KEY UP ----- //
-      if (e.keyCode == '38') {      
+    // ----- KEY UP ----- //
+    if (e.keyCode == '38') {      
         var count = 2;  
-        
         for (var x = 2; x > 1; x--) {
-          for (var y = 1; y < 5; y++) {
-            moveTilesMain(x, y, -1, 0, 1, 0);
-            console.info(''+x +y);
-          }
-          if (x == 2) {
-            x += count;
-            count++;
-          }
-          if (count > 4) { break; }
+            for (var y = 1; y < 5; y++) {
+                moveTilesMain(x, y, -1, 0, 1, 0);
+                console.info('' + x + y);
+            }
+            if (x == 2) {
+                x += count;
+                count++;
+            }
+            if (count > 4) { break; }
         }
         cellReset();
-      }   
-        
-  // ----- KEY DOWN ----- //
-      else if (e.keyCode == '40') { // down
+    }   
+    // ----- KEY DOWN ----- //
+    else if (e.keyCode == '40') { // down
         var count = -2;  
-        var test  = 1;
         for (var x = 3; x < 4; x++) {
-          for (var y = 1; y < 5; y++) {
-            moveTilesMain(x, y, 1, 0, 4, 0);
-          }
-          if (x == 3) {
-            x += count;
-            count--;
-          }
-          if (count < -4) { break; }
+            for (var y = 1; y < 5; y++) {
+                moveTilesMain(x, y, 1, 0, 4, 0);
+            }
+            if (x == 3) {
+                x += count;
+                count--;
+            }
+            if (count < -4) { break; }
         }
         cellReset();
-      }
-        
-  // ----- KEY LEFT ----- //      
-      
-      else if (e.keyCode == '37') { // left
-        
-        
+    }
+    // ----- KEY LEFT ----- //      
+    else if (e.keyCode == '37') { // left
         var count = 2;  
-        var test  = 1;
         for (var x = 2; x > 1; x--) {
-          for (var y = 1; y < 5; y++) {
-            moveTilesMain(y, x, 0, -1, 0, 1);
-          }
-          if (x == 2) {
-            x += count;
-            count++;
-          }
-          if (count > 4) { break; }
+            for (var y = 1; y < 5; y++) {
+                moveTilesMain(y, x, 0, -1, 0, 1);
+            }
+            if (x == 2) {
+                x += count;
+                count++;
+            }
+            if (count > 4) { break; }
         }
         cellReset();
-      }
-    
-  // ----- KEY RIGHT ----- //
-      else if (e.keyCode == '39') { // right
-        
+    }
+    // ----- KEY RIGHT ----- //
+    else if (e.keyCode == '39') { // right
         var count = -2;  
-        var noCell = 0;
-        var c = 1;
-        var d = 0;
-        
         for (var x = 3; x < 4; x++) {
-          for (var y = 1; y < 5; y++) {
-            moveTilesMain(y, x, 0, 1, 0, 4, c, d);
-          }
-          if (x == 3) {
-            x += count;
-            count--;
-          }
-          if (count < -4) { break; }
+            for (var y = 1; y < 5; y++) {
+                moveTilesMain(y, x, 0, 1, 0, 4);
+            }
+            if (x == 3) {
+                x += count;
+                count--;
+            }
+            if (count < -4) { break; }
         }
         cellReset();
-      }
-  
-  }
-  
-  //--------------------------------------------------------
-  
-  function moveTilesMain(x, y, X, Y, xBorder, yBorder, c, d) {      
-     
-    var tile     = document.getElementById('tile_'+x +y);
-    var checker  = document.getElementById(''+x +y);
-    var xAround  = x+X;
-    var yAround  = y+Y;
-    
+    }
+}
+
+// Existing moveTilesMain function
+function moveTilesMain(x, y, X, Y, xBorder, yBorder) {      
+    var tile = document.getElementById('tile_' + x + y);
+    var checker = document.getElementById('' + x + y);
+    var xAround = x + X;
+    var yAround = y + Y;
+
     if (xAround > 0 && xAround < 5 && yAround > 0 && yAround < 5 && checker.className == 'grid_cell active') {
-      var around = document.getElementById(''+xAround +yAround);
-      
-      //________
+        var around = document.getElementById('' + xAround + yAround);
         
-      if (around.className == 'grid_cell active') {
-        //catching
-        var aroundTile = document.getElementById('tile_'+xAround +yAround);
-        if (aroundTile.innerHTML == tile.innerHTML) {
-          //same
-          var value = tile.dataset.value*2;
-          aroundTile.dataset.value = ''+value;
-          aroundTile.className = 'tile '+value;
-          aroundTile.innerHTML = ''+value;
-          colorSet(value, aroundTile);
-          checker.removeChild(tile);
-          checker.className = 'grid_cell';
-          around.className  = 'grid_cell active merged';
-          document.getElementsByClassName('grid').id = 'moved';
-          document.getElementsByClassName('grid').className = 'grid '+value;
-          var grid = document.getElementById(' ');
-          var scoreValue = parseInt(grid.dataset.value);
-          var newScore = value + scoreValue;
-          
-          grid.dataset.value = newScore;
-          var score = document.getElementById('value');
-          
-          score.innerHTML = ''+newScore;
-        } 
-      } else if (around.className == 'grid_cell'){
-        //not catching
-        around.appendChild(tile);
-        around.className = 'grid_cell active';
-        tile.id = 'tile_'+xAround +yAround;
-        checker.className = 'grid_cell';
-        document.getElementsByClassName('grid').id = 'moved';
-      }
-      
-      
-      //________
+        if (around.className == 'grid_cell active') {
+            var aroundTile = document.getElementById('tile_' + xAround + yAround);
+            if (aroundTile.innerHTML == tile.innerHTML) {
+                var value = tile.dataset.value * 2;
+                aroundTile.dataset.value = '' + value;
+                aroundTile.className = 'tile ' + value;
+                aroundTile.innerHTML = '' + value;
+                colorSet(value, aroundTile);
+                checker.removeChild(tile);
+                checker.className = 'grid_cell';
+                around.className  = 'grid_cell active merged';
+                document.getElementsByClassName('grid').id = 'moved';
+                var grid = document.getElementById(' ');
+                var scoreValue = parseInt(grid.dataset.value);
+                var newScore = value + scoreValue;
+
+                grid.dataset.value = newScore;
+                var score = document.getElementById('value');
+                score.innerHTML = '' + newScore;
+            } 
+        } else if (around.className == 'grid_cell') {
+            around.appendChild(tile);
+            around.className = 'grid_cell active';
+            tile.id = 'tile_' + xAround + yAround;
+            checker.className = 'grid_cell';
+            document.getElementsByClassName('grid').id = 'moved';
+        }
     }  
-  }
-  
-  
-  //-------------------------------------------------------
-  
-  
-  function cellReset() {
+}
+
+// Existing cellReset function
+function cellReset() {
     var count = 0;
     var a = document.getElementsByClassName('grid').id;
-    console.log(''+a);
+    console.log('' + a);
     
-    for (var x=1; x<5; x++) {
-      for (var y=1; y<5; y++) {
-        
-        var resetter = document.getElementById(''+x +y);
-        if (resetter.innerHTML != '') {
-          count++;
+    for (var x = 1; x <= 4; x++) {
+        for (var y = 1; y <= 4; y++) {
+            var resetter = document.getElementById('' + x + y);
+            if (resetter.innerHTML !== '') {
+                count++;
+            }
+
+            if (resetter.innerHTML === '') {
+                resetter.className = 'grid_cell';
+            }
+
+            if (resetter.className === 'grid_cell active merged') {
+                resetter.className = 'grid_cell active'
+            }
         }
-        
-        if (resetter.innerHTML == '') {
-          resetter.className = 'grid_cell';
-        } 
-        
-        if (resetter.className == 'grid_cell active merged') {
-          resetter.className = 'grid_cell active'
-        }
-      }
     }
-    if (count == 16) {
-      document.getElementById('status').className = 'lose';
-    } else if (document.getElementsByClassName('grid').id == 'moved'){ 
-      cellCreator(1, 1); 
+
+    if (count === 16 && checkGameOver()) {
+        document.getElementById('status').className = 'lose';
+        alert('Game Over! No more moves available.');
+        saveGameScore();
+    } else if (document.getElementsByClassName('grid').id === 'moved') {
+        cellCreator(1, 1);
     }
     document.getElementsByClassName('grid').id = ' ';
-  }
-  
-  function score() {
-    
-    var grid = document.getElementById(' ');
-    var value = grid.dataset.value;
-    document.getElementById('value').innerHTML = ''+value;
-    
-  }
-  
-  
-  /* ----- STYLE ----- */
-  function colorSet(value, tile) {
+}
+
+// Existing colorSet function
+function colorSet(value, tile) {
     switch(value) {
-      case 2:    tile.style.background = '#fbfced'; tile.style.color = 'black'; break;
-      case 4:    tile.style.background = '#ecefc6'; tile.style.color = 'black'; break;
-      case 8:    tile.style.background = '#ffb296'; tile.style.color = 'black'; break;
-      case 16:   tile.style.background = '#ff7373'; tile.style.color = 'black'; break;
-      case 32:   tile.style.background = '#f6546a'; tile.style.color = 'white'; break;
-      case 64:   tile.style.background = '#8b0000'; tile.style.color = 'white'; break;
-      case 128:  tile.style.background = '#794044'; tile.style.color = 'white'; 
-                 tile.style.fontSize = '50px'; break;
-      case 256:  tile.style.background = '#31698a'; tile.style.color = 'white';
-                 tile.style.fontSize = '50px'; break;
-      case 512:  tile.style.background = '#297A76'; tile.style.color = 'white';
-                 tile.style.fontSize = '50px'; break;
-      case 1024: tile.style.background = '#2D8A68'; tile.style.color = 'white';
-                 tile.style.fontSize = '40px'; break;
-      case 2048: tile.style.background = '#1C9F4E'; tile.style.color = 'white'; 
-                 tile.style.fontSize = '40px'; 
-                 document.getElementById('status').className = 'won'; break;
-      case 4096: tile.style.background = '#468499'; tile.style.color = 'white'; 
-                 tile.style.fontSize = '40px'; break;
-      case 8192: tile.style.background = '#0E2F44'; tile.style.color = 'white';
-                 tile.style.fontSize = '40px'; break;
+        case 2:    tile.style.background = '#fbfced'; tile.style.color = 'black'; break;
+        case 4:    tile.style.background = '#ecefc6'; tile.style.color = 'black'; break;
+        case 8:    tile.style.background = '#ffb296'; tile.style.color = 'black'; break;
+        case 16:   tile.style.background = '#ff7373'; tile.style.color = 'black'; break;
+        case 32:   tile.style.background = '#f6546a'; tile.style.color = 'white'; break;
+        case 64:   tile.style.background = '#8b0000'; tile.style.color = 'white'; break;
+        case 128:  tile.style.background = '#794044'; tile.style.color = 'white'; 
+                   tile.style.fontSize = '50px'; break;
+        case 256:  tile.style.background = '#31698a'; tile.style.color = 'white';
+                   tile.style.fontSize = '50px'; break;
+        case 512:  tile.style.background = '#297A76'; tile.style.color = 'white';
+                   tile.style.fontSize = '50px'; break;
+        case 1024: tile.style.background = '#2D8A68'; tile.style.color = 'white';
+                   tile.style.fontSize = '40px'; break;
+        case 2048: tile.style.background = '#1C9F4E'; tile.style.color = 'white'; 
+                   tile.style.fontSize = '40px'; 
+                   document.getElementById('status').className = 'won'; break;
+        case 4096: tile.style.background = '#468499'; tile.style.color = 'white'; 
+                   tile.style.fontSize = '40px'; break;
+        case 8192: tile.style.background = '#0E2F44'; tile.style.color = 'white';
+                   tile.style.fontSize = '40px'; break;
     }
-                      
-  }
-  
-  function info() {
-    setTimeout(function() {
-      document.getElementById('description').classList.toggle('show');
-    }, 10);  
-    
-  }
-  
-  function reset() {
-    for (var x = 1; x < 5; x++) {
-      for (var y = 1; y < 5; y++) {
-        var resetter = document.getElementById(''+x +y);
-        if (resetter.className == 'grid_cell active') {
-          var tile = document.getElementById('tile_'+x +y);
-          resetter.removeChild(tile);
+}
+
+// Function to check if the game is over
+function checkGameOver() {
+    for (var x = 1; x <= 4; x++) {
+        for (var y = 1; y <= 4; y++) {
+            var cell = document.getElementById('' + x + y);
+            if (cell.innerHTML === '') {
+                return false;  // If there's an empty cell, the game is not over
+            }
         }
-      }
+    }
+
+    for (var x = 1; x <= 4; x++) {
+        for (var y = 1; y <= 4; y++) {
+            var tile = document.getElementById('tile_' + x + y);
+            if (tile) {
+                var currentValue = parseInt(tile.innerHTML);
+                if (y < 4) {
+                    var rightTile = document.getElementById('tile_' + x + (y + 1));
+                    if (rightTile && parseInt(rightTile.innerHTML) === currentValue) {
+                        return false;  // If adjacent tiles can merge, the game is not over
+                    }
+                }
+                if (x < 4) {
+                    var downTile = document.getElementById('tile_' + (x + 1) + y);
+                    if (downTile && parseInt(downTile.innerHTML) === currentValue) {
+                        return false;  // If adjacent tiles can merge, the game is not over
+                    }
+                }
+            }
+        }
+    }
+
+    return true; // If no empty cells and no mergeable tiles, it's game over
+}
+
+// Function to store the final score
+function saveGameScore() {
+    var grid = document.getElementById(' ');
+    var finalScore = grid.dataset.value;
+    var username = "zapit_wallet_username"; // Replace this with the current user's username
+
+    console.log("Final score: " + finalScore);
+    localStorage.setItem('finalScore', finalScore);
+
+    var scoreData = {
+        username: username,
+        score: finalScore
+    };
+}
+
+// Function to reset the game
+function reset() {
+    for (var x = 1; x < 5; x++) {
+        for (var y = 1; y < 5; y++) {
+            var resetter = document.getElementById('' + x + y);
+            if (resetter.className == 'grid_cell active') {
+                var tile = document.getElementById('tile_' + x + y);
+                resetter.removeChild(tile);
+            }
+        }
     }
     document.getElementById('status').className = '';
     document.getElementById(' ').dataset.value = 0;
     score();
     cellReset();
     cellCreator(2, 0);
-  }
-// Add a function to check if the game is over
-function checkGameOver() {
-    // Check if there are any empty cells
-    for (var x = 1; x <= 4; x++) {
-      for (var y = 1; y <= 4; y++) {
-        var cell = document.getElementById('' + x + y);
-        if (cell.innerHTML === '') {
-          return false;  // If there's an empty cell, the game is not over
-        }
-      }
-    }
-  
-    // Check if there are any adjacent tiles that can merge
-    for (var x = 1; x <= 4; x++) {
-      for (var y = 1; y <= 4; y++) {
-        var tile = document.getElementById('tile_' + x + y);
-        if (tile) {
-          var currentValue = parseInt(tile.innerHTML);
-          // Check right
-          if (y < 4) {
-            var rightTile = document.getElementById('tile_' + x + (y + 1));
-            if (rightTile && parseInt(rightTile.innerHTML) === currentValue) {
-              return false;  // If adjacent tiles can merge, the game is not over
-            }
-          }
-          // Check down
-          if (x < 4) {
-            var downTile = document.getElementById('tile_' + (x + 1) + y);
-            if (downTile && parseInt(downTile.innerHTML) === currentValue) {
-              return false;  // If adjacent tiles can merge, the game is not over
-            }
-          }
-        }
-      }
-    }
-  
-    // If no empty cells and no mergeable tiles, it's game over
-    return true;
-  }
-  
-  // Modify the cellReset function to check for game over
-  function cellReset() {
-    var count = 0;
-    var a = document.getElementsByClassName('grid').id;
-    console.log('' + a);
-    
-    for (var x = 1; x <= 4; x++) {
-      for (var y = 1; y <= 4; y++) {
-        var resetter = document.getElementById('' + x + y);
-        if (resetter.innerHTML !== '') {
-          count++;
-        }
-  
-        if (resetter.innerHTML === '') {
-          resetter.className = 'grid_cell';
-        }
-  
-        if (resetter.className === 'grid_cell active merged') {
-          resetter.className = 'grid_cell active'
-        }
-      }
-    }
-  
-    // If the grid is full and no more moves are possible, display game over
-    if (count === 16 && checkGameOver()) {
-      document.getElementById('status').className = 'lose';
-      alert('Game Over! No more moves available.');
-      saveGameScore();
-    } else if (document.getElementsByClassName('grid').id === 'moved') {
-      cellCreator(1, 1);
-    }
-    document.getElementsByClassName('grid').id = ' ';
-  }
-  
-  // Function to store the final score
-  function saveGameScore() {
-    var grid = document.getElementById(' ');
-    var finalScore = grid.dataset.value;
-    var username = username; // Replace this with the current user's username  (zapit wallet username)
-
-    // Log the final score for debugging
-    console.log("Final score: " + finalScore);
-
-    // Optional: Save the final score in localStorage
-    localStorage.setItem('finalScore', finalScore);
-
-    // Prepare the score data
-    var scoreData = {
-        username: id,
-        score: finalScore
-    };
 }
 
-  
+// Function to display game instructions
+function info() {
+    setTimeout(function() {
+        document.getElementById('description').classList.toggle('show');
+    }, 10);  
+}
