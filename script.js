@@ -102,7 +102,7 @@ document.addEventListener('touchend', function(event) {
 
     if (Math.abs(deltaX) > Math.abs(deltaY)) {
         // Horizontal swipe
-        if (deltaX > 0) {
+        if (deltaX > 50) {
             // Swipe right
             directions({ keyCode: 39 });
         } else {
@@ -111,7 +111,7 @@ document.addEventListener('touchend', function(event) {
         }
     } else {
         // Vertical swipe
-        if (deltaY > 0) {
+        if (deltaY > 50) {
             // Swipe down
             directions({ keyCode: 40 });
         } else {
