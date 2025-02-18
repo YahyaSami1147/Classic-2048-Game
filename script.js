@@ -99,10 +99,11 @@ document.addEventListener('touchend', function(event) {
 
     var deltaX = touchEndX - touchStartX;
     var deltaY = touchEndY - touchStartY;
+    let threshold = 50;
 
-    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > threshold  ) {
         // Horizontal swipe
-        if (deltaX > 50) {
+        if (deltaX > 0) {
             // Swipe right
             directions({ keyCode: 39 });
         } else {
@@ -111,7 +112,7 @@ document.addEventListener('touchend', function(event) {
         }
     } else {
         // Vertical swipe
-        if (deltaY > 50) {
+        if (deltaY > 0) {
             // Swipe down
             directions({ keyCode: 40 });
         } else {
