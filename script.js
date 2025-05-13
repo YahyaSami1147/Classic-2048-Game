@@ -422,6 +422,43 @@ function checkGameOver() {
     document.getElementsByClassName('grid').id = ' ';
   }
   
+  // Function to store the final score
+  function saveGameScore() {
+    var grid = document.getElementById(' ');
+    var finalScore = grid.dataset.value;
+    var username = username; // Replace this with the current user's username  (zapit wallet username)
+
+    // Log the final score for debugging
+    console.log("Final score: " + finalScore);
+
+    // Optional: Save the final score in localStorage
+    localStorage.setItem('finalScore', finalScore);
+
+    // Prepare the score data
+    var scoreData = {
+        username: id,
+        score: finalScore
+    };
+
+    // Send the score to the server using Fetch API
+    fetch('save_score.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(scoreData) // Send data as a JSON string
+    })
+    .then(response => response.json())  // Parse the response as JSON
+    .then(data => {
+        if (data.success) {
+            console.log('Score saved successfully!');
+        } else {
+            console.log('Failed to save score:', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error saving score:', error);
+    });
 }
 
   
