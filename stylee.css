@@ -54,20 +54,20 @@ div.description {
 }
 
 .info {
-  width: 100px;
+  width: 40px;
   height: 40px;
-  border-radius: 3px;
-  font-weight: 700;
+  border-radius: 50%;
+  font-weight: 100;
   cursor: pointer;
   border: 0px;
+  border-color: #aaa;
   background-color: #8f7a66;
-  color: #f9f6f2;
-  font-size: 16px;
-  top: 0px;
-  transform: none;
-  margin-left: 10px;
+  color: #fff;
+  font-size: 20px;
+  top: 50px;
+  transform: translate(-50%, -50%);
+  margin-left: 25px;
   transition: 0.1s background-color;
-  text-transform: capitalize;
 }
 
 .info:hover {
