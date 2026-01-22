@@ -12,11 +12,10 @@ body {
   width: 510px;
   margin-left: auto;
   margin-right: auto;
-  display: block;
-  float: center;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  padding: 20px 0;
 }
 
 div.game {
@@ -54,29 +53,33 @@ div.description {
 }
 
 .info {
-  width: 100px;
-  height: 40px;
+  width: 120px;
+  height: 45px;
   border-radius: 3px;
   font-weight: 700;
   cursor: pointer;
-  border: 0px;
+  border: none;
   background-color: #8f7a66;
   color: #f9f6f2;
   font-size: 16px;
-  top: 0px;
-  transform: none;
-  margin-left: 10px;
   transition: 0.1s background-color;
   text-transform: capitalize;
+  font-family: nunito;
 }
 
 .info:hover {
   background-color: #9f8a76;
 }
 
-
 .repeat {
   margin: 0px !important;
+}
+
+/* Right side container for scores and button */
+.head > div:last-child {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
 .a {
