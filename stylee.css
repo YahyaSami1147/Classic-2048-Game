@@ -54,20 +54,20 @@ div.description {
 }
 
 .info {
-  width: 40px;
+  width: 100px;
   height: 40px;
-  border-radius: 50%;
-  font-weight: 100;
+  border-radius: 3px;
+  font-weight: 700;
   cursor: pointer;
   border: 0px;
-  border-color: #aaa;
   background-color: #8f7a66;
-  color: #fff;
-  font-size: 20px;
-  top: 50px;
-  transform: translate(-50%, -50%);
-  margin-left: 25px;
+  color: #f9f6f2;
+  font-size: 16px;
+  top: 0px;
+  transform: none;
+  margin-left: 10px;
   transition: 0.1s background-color;
+  text-transform: capitalize;
 }
 
 .info:hover {
@@ -81,25 +81,41 @@ div.description {
 
 .a {
   font-family: Nunito;
-  font-size: 100px;
+  font-size: 80px;
   font-weight: 700;
-  margin-right: 15px;
+  margin-right: 20px;
   color: #776e65;
+  line-height: 1;
 }
 
 .score {
   position: relative;
-  width: 100px;
-  height: 60px;
-  top: 10px;
+  width: 80px;
+  height: 50px;
+  top: 0px;
   font-family: nunito;
   font-weight: 700;
-  font-size: 25px;
-  color: #eee4da;
+  font-size: 22px;
+  color: #fff;
   text-align: center;
   background-color: #bbada0;
   border-radius: 3px;
-  padding-top: 15px;
+  padding: 5px 10px;
+  margin: 0 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.score::before {
+  content: attr(data-label);
+  font-size: 11px;
+  font-weight: 700;
+  color: #eee4da;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 2px;
 }
 
 
